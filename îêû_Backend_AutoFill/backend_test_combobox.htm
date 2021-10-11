@@ -1,0 +1,254 @@
+<html>
+<head>
+<title>Администрирование сайта</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+</head>
+
+<body>
+<form id="editform" onsubmit="return false" enctype="multipart/form-data">
+<table style="width: 400px;" border="0" cellpadding="5" cellspacing="0">
+<tbody><tr>
+<td>Город</td>
+<td>
+<select id="data[city]" name="data[city]" style="width: 600px;">
+<option value="40"></option>
+<option value="33">Salouf</option>
+<option value="34">Therwil</option>
+<option value="9">Балашиха</option>
+<option value="39">Бока -Которская бухта</option>
+<option value="50">Братеево</option>
+<option value="61">Быково</option>
+<option value="46">Видное</option>
+<option value="27">Воскресенск</option>
+<option value="62">Дедовск</option>
+<option value="51">Дзержинский</option>
+<option value="67">Дмитров</option>
+<option value="6">Долгопрудный</option>
+<option value="70">Домодедово</option>
+<option value="24">Евпатория</option>
+<option value="75">Егорьевск</option>
+<option value="7">Железнодорожный</option>
+<option value="29">Жуковский</option>
+<option value="36">Звенигород</option>
+<option value="48">Зеленоград</option>
+<option value="65">Ивантеевка</option>
+<option value="22">Кимры</option>
+<option value="64">Климовск</option>
+<option value="69">Клин</option>
+<option value="20">Кольчугино</option>
+<option value="43">Королев</option>
+<option value="32">Котор</option>
+<option value="8">Красногорск</option>
+<option value="52">Куркино</option>
+<option value="53">Лобня</option>
+<option value="35">Луштица</option>
+<option value="28">Люберецкий район</option>
+<option value="16">Люберцы</option>
+<option value="1">Москва</option>
+<option value="15">Московская область</option>
+<option value="10">Мытищи</option>
+<option value="74">Наро-Фоминск</option>
+<option value="54">Нахабино</option>
+<option value="66">Немчиновка</option>
+<option value="37">Ногинск</option>
+<option value="18">Одинцово</option>
+<option value="71">Орехово-Зуево</option>
+<option value="55">Паведники</option>
+<option value="30">Петровац</option>
+<option value="17">Подольск</option>
+<option value="68">Пушкино</option>
+<option value="56">Раменское</option>
+<option value="42">Сергиев Посад</option>
+<option value="19">Серпухов</option>
+<option value="57">Солнцево</option>
+<option value="60">Софрино</option>
+<option value="73">Сочи</option>
+<option value="38">Сутоморье</option>
+<option value="58">Сходня</option>
+<option value="59">Томилино</option>
+<option value="11">Троицк</option>
+<option value="49">Тула</option>
+<option value="72">Фрязино</option>
+<option value="25">Химки</option>
+<option value="41">Чехов</option>
+<option value="12">Щелково</option>
+<option value="63">Щелковский район</option>
+<option value="13">Щербинка</option>
+<option value="44">Электросталь</option>
+<option value="45">Юбилейный</option>
+</select>
+</td>
+	</tr>
+<tr>
+<td>Название ЖК</td>
+<td>
+<input id="data[coopname]" name="data[coopname]" value="" style="width: 600px;" type="text"></td>
+	</tr>
+<tr>
+<td>Метро</td>
+<td>
+<select id="data[subway]" name="data[subway]" style="width: 600px;">
+<option value="0"></option>
+<option value="1">Авиамоторная</option>
+<option value="2">Автозаводская</option>
+<option value="3">Академическая</option>
+<option value="157">Александровский сад</option>
+<option value="4">Алексеевская</option>
+<option value="5">Алтуфьево</option>
+<option value="126">Анино</option>
+<option value="6">Арбатская</option>
+<option value="7">Аэропорт</option>
+<option value="8">Бабушкинская</option>
+<option value="9">Багратионовская</option>
+<option value="10">Баррикадная</option>
+<option value="11">Бауманская</option>
+<option value="12">Беговая</option>
+<option value="13">Белорусская</option>
+<option value="14">Беляево</option>
+<option value="15">Бибирево</option>
+<option value="16">Библиотека им. Ленина</option>
+<option value="17">Битцевский парк</option>
+<option value="18">Боровицкая</option>
+<option value="19">Ботанический сад</option>
+<option value="20">Братиславская</option>
+<option value="148">бул. Дмитрия Донского</option>
+<option value="163">Бульвар адмирала Ушакова</option>
+<option value="165">Бунинская аллея</option>
+<option value="21">Варшавская</option>
+<option value="22">ВДНХ</option>
+<option value="23">Владыкино</option>
+<option value="24">Водный стадион</option>
+<option value="25">Войковская</option>
+<option value="26">Волгоградский пр-кт</option>
+<option value="27">Волжская</option>
+<option value="28">Воробьевы горы</option>
+<option value="29">Выхино</option>
+<option value="158">Деловой центр</option>
+<option value="30">Динамо</option>
+<option value="31">Дмитровская</option>
+<option value="32">Добрынинская</option>
+<option value="33">Домодедовская</option>
+<option value="34">Дубровка</option>
+<option value="35">Измайловская</option>
+<option value="37">Калужская</option>
+<option value="38">Кантемировская</option>
+<option value="39">Каховская</option>
+<option value="40">Каширская</option>
+<option value="41">Киевская</option>
+<option value="42">Китай-город</option>
+<option value="43">Кожуховская</option>
+<option value="44">Коломенская</option>
+<option value="45">Комсомольская</option>
+<option value="46">Коньково</option>
+<option value="47">Красногвардейская</option>
+<option value="48">Краснопресненская</option>
+<option value="49">Красносельская</option>
+<option value="50">Красные ворота</option>
+<option value="51">Крестьянская застава</option>
+<option value="52">Кропоткинская</option>
+<option value="53">Крылатское</option>
+<option value="54">Кузнецкий мост</option>
+<option value="55">Кузьминки</option>
+<option value="56">Кунцевская</option>
+<option value="57">Курская</option>
+<option value="58">Кутузовская</option>
+<option value="59">Ленинский пр-кт</option>
+<option value="60">Лубянка</option>
+<option value="61">Люблино</option>
+<option value="62">Марксиская</option>
+<option value="63">Марьино</option>
+<option value="64">Маяковская</option>
+<option value="65">Медведково</option>
+<option value="159">Международная</option>
+<option value="66">Менделеевская</option>
+<option value="67">Молодежная</option>
+<option value="68">Нагатинская</option>
+<option value="69">Нагорная</option>
+<option value="70">Нахимовский пр-кт</option>
+<option value="71">Новогиреево</option>
+<option value="72">Новокузнецкая</option>
+<option value="73">Новослободская</option>
+<option value="74">Новые черемушки</option>
+<option value="75">Октябрьская</option>
+<option value="76">Октябрьское поле</option>
+<option value="77">Орехово</option>
+<option value="78">Отрадное</option>
+<option value="79">Охотный ряд</option>
+<option value="80">Павелецкая</option>
+<option value="81">Парк культуры</option>
+<option value="149">Парк Победы</option>
+<option value="36">Партизанская</option>
+<option value="82">Первомайская</option>
+<option value="83">Перово</option>
+<option value="84">Петровско-разумовская</option>
+<option value="85">Печатники</option>
+<option value="86">Пионерская</option>
+<option value="89">Планерная</option>
+<option value="87">Площадь Ильича</option>
+<option value="88">Площадь революции</option>
+<option value="90">Полежаевская</option>
+<option value="91">Полянка</option>
+<option value="95">Пр-кт Вернадского</option>
+<option value="92">Пражская</option>
+<option value="93">Преображенская пл.</option>
+<option value="94">Пролетарская</option>
+<option value="96">Проспект мира</option>
+<option value="97">Профсоюзная</option>
+<option value="98">Пушкинская</option>
+<option value="99">Речной вокзал</option>
+<option value="100">Рижская</option>
+<option value="101">Римская</option>
+<option value="102">Рязанский пр-кт</option>
+<option value="103">Савеловская</option>
+<option value="104">Свиблово</option>
+<option value="105">Севастопольская</option>
+<option value="106">Семеновская</option>
+<option value="107">Серпуховская</option>
+<option value="108">Смоленская</option>
+<option value="109">Сокол</option>
+<option value="110">Сокольники</option>
+<option value="111">Спортивная</option>
+<option value="112">Студенческая</option>
+<option value="113">Сухаревская</option>
+<option value="114">Сходненская</option>
+<option value="115">Таганская</option>
+<option value="116">Тверская</option>
+<option value="117">Театральная</option>
+<option value="118">Текстильщики</option>
+<option value="119">Теплый стан</option>
+<option value="120">Тимирязевская</option>
+<option value="121">Третьяковская</option>
+<option value="122">Тульская</option>
+<option value="123">Тургеневская</option>
+<option value="124">Тушинская</option>
+<option value="125">ул. академика Янгеля</option>
+<option value="164">ул. Горчакова</option>
+<option value="160">ул. Подбельского</option>
+<option value="162">ул. Скобелевская</option>
+<option value="161">ул. Старокачаловская</option>
+<option value="127">Улица 1905 года</option>
+<option value="128">Университет</option>
+<option value="129">Филевский парк</option>
+<option value="130">Фили</option>
+<option value="131">Фрунзенская</option>
+<option value="132">Царицыно</option>
+<option value="133">Цветной бульвар</option>
+<option value="134">Черкизовская</option>
+<option value="135">Чертаноская</option>
+<option value="136">Чеховская</option>
+<option value="137">Чистые пруды</option>
+<option value="138">Чкаловская</option>
+<option value="139">Шаболовская</option>
+<option value="140">Шоссе энтузиастов</option>
+<option value="141">Щелковская</option>
+<option value="142">Щукинская</option>
+<option value="143">Электрозаводская</option>
+<option value="144">Юго-западная</option>
+<option value="145">Южная</option>
+<option value="146">Ясенево</option>
+</select>
+</td>
+</tr>
+</tbody></table>
+</form>
+</body></html>

@@ -1,0 +1,633 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+
+
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><title>Администрирование сайта</title>
+
+<style type="text/css">
+<!--
+body {
+	background: #FFFFFF;
+	height: 100%;
+	margin: 0px;
+	padding: 0px;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+}
+h1 {
+	font-size: 160%;
+	font-weight: normal;
+}
+
+a {
+	color:#0090DB;
+}
+
+a.visited {
+	color:#D72718;
+}
+
+.stretchtoggle {
+	background-color:#D72718;
+	color:white;
+	cursor:pointer;
+	display:block;
+	padding:5px;
+}
+
+document {
+	height: 100%;
+}
+#menuLayer {
+	width: 200px;
+	left: 0px;
+	top: -3px;
+	float: left;
+	position: absolute;
+	overflow: hidden;
+	padding-top: 50px;
+}
+
+#content {
+	margin-left: 220px;
+	margin-top: 10px;
+}
+
+#menuLayer dl {
+	padding:0;
+	margin:0;
+}
+
+
+#menuLayer dt {
+	padding:2px 5px;
+	margin:0;
+}
+
+#menuLayer dd {
+	padding:0px 10px;
+	margin:0;
+}
+
+#menuLayer a {
+	font-weight: normal;
+	color:#0090DB;
+	dislpay:block;
+	margin-bottom:5px;
+}
+
+#menuLayer a:visited {
+	font-weight: normal;
+	color:#0090DB;
+	dislpay:block;
+	margin-bottom:5px;
+}
+
+
+#statusLine {
+	position:relative;
+	width:100%;
+	height:30px;
+	vertical-align:bottom;
+	background: #FFF9F9;
+	top: 0px;
+	left: 0px;
+
+}
+#statusLineText {
+	display:inline;
+	line-height:30px;
+	vertical-align: bottom;
+	text-align: left;
+	text-indent: 10px;
+	padding-top: 4px;
+	font-weight: bold;
+	color: #990000;
+}
+
+ul {
+	list-style:none;
+}
+
+-->
+</style>
+<script type="text/javascript" language="JavaScript" src="backend_files/tiny_mce.js"></script>
+<script type="text/javascript" language="JavaScript" src="backend_files/mootools.js"></script>
+<script type="text/javascript" language="javascript1.2" src="backend_files/sortableTable.js"></script>
+<script type="text/javascript" language="JavaScript" src="backend_files/JsHttpRequest.js"></script>
+<link href="backend_files/sortableTable.css" rel="stylesheet" type="text/css">
+<script type="text/javascript">
+
+tinyMCE.init({
+    mode : "none",
+    theme : "advanced",
+	language: "ru",
+	cleanup_on_startup : true,
+	plugins : "searchreplace,inlinepopups",
+	width: "600px",
+	theme_advanced_layout_manager : "SimpleLayout",
+	theme_advanced_toolbar_location : "top",
+	theme_advanced_toolbar_align : "left",
+	theme_advanced_statusbar_location : "bottom",
+	theme_advanced_buttons1 : "bold,italic,underline,strikethrough,separator,cut,copy,paste,undo,redo,search,replace,separator,bullist,numlist,outdent,indent",
+	theme_advanced_buttons2 : "link,unlink,separator,fontselect,fontsizeselect,forecolor",
+	theme_advanced_buttons3 : ""
+});
+
+var sortableOptions = {
+	onStart: function() {
+	},
+	onComplete: function(e) {
+		alert(e);
+	}
+};  
+
+Array.extend({
+	makeSortable: function(options){
+		var Sortable = new Sortables(this, options);
+		this.each(function(el){
+			el.style.cursor = 'move';
+			el.extend(Sortable);
+		})
+	}
+});
+
+startSorting= function (itemname){
+	$$(itemname).each(
+		function(sorted){
+			if(sorted.childNodes){
+				for(var i = 0;i<sorted.childNodes.length; i++){
+					var item = sorted.childNodes[i];
+					if(item.innerHTML){
+						new Sortables(sorted, {
+								handle : item, 
+								overflown : sorted//,
+	//							onStart: function(){if(Sorting.showStatus == true)Status.liveStatus('Sorting List');}, 
+	//							onComplete: function(){if(Sorting.showStatus == true)Status.showStatus('Finished Sorting');} 
+							}
+						);
+						item.setStyle('cursor', 'move');
+					}
+				}
+			}
+		}
+	)
+}
+
+popup=function(url, w, h) {
+	window.open(url,"popup","toolbar=no,location=no,directories=no,status=yes,menubar=no,scrollbars=no,resizable=yes,width="+(w+8)+",height="+(h+8));
+}
+function setMetroList(string, values)
+{
+	document.getElementById("metroList").innerText = string;
+	document.getElementById("subwayList").innerText= values;
+
+	if(values.length>0)
+		document.getElementById("clearSubway").style.display = 'inline';
+	else
+		document.getElementById("clearSubway").style.display = 'none';	   
+}
+
+
+filter=function() { 
+	clearTimeout(window.filterOut); 
+	if (typeof(window.noFilter)=='undefined' || !window.noFilter)  {
+		var filters=[{table:window.filterTable,field:'undo',compare:'=0', condition:'AND'}]; 
+	} else {
+		var filters=[];
+		window.noFilter=false;
+	}
+	for (i=0; i<filterForm.elements.length; i++) { 
+		if (filterForm.elements[i].value!='') {
+			if (filterForm.elements[i].nodeName=='SELECT') {
+				filters.push({table:window.filterTable,field:filterForm.elements[i].name, value:filterForm.elements[i].value, compare:'="'+filterForm.elements[i].value+'"', condition:'AND'});
+			} else {
+				filters.push({table:window.filterTable,field:filterForm.elements[i].name, value:filterForm.elements[i].value, compare:'LIKE "%'+filterForm.elements[i].value+'%"', condition:'AND'});
+			}
+		}
+	}; 
+	ajaxSend({event:'view', view:window.filterView, option:window.filterOption, filters:filters});
+}; 
+runFilter=function(form, table, view, option) {
+	clearTimeout(window.filterOut);
+	window.filterForm=form; 
+	window.filterTable=table; 
+	window.filterView=view; 
+	window.filterOption=(typeof(option)=='undefined') ? '' : option;
+	window.filterOut=setTimeout(filter, 1000);
+}; 
+
+
+
+function clickItem(item, eventItem) {
+	if (item.className=='selected') return;
+	var ul=item.parentNode;
+	if (typeof(ul.childNodes)=='undefined') return;
+	for (var i=0;i<ul.childNodes.length;i++) {
+		if (ul.childNodes[i].className=='selected') ul.childNodes[i].className='';
+	}
+	item.className='selected';
+	if (eventItem!=undefined) ajaxSend(eventItem);
+}
+
+var editors=new Array();
+
+setEditor=function(edname) {
+	editors.push(edname);
+	tinyMCE.execCommand("mceAddControl", false, edname);
+};
+
+cleanEditors=function() {
+	var s;
+	while(editors.length>0) {
+		s=editors.pop();
+		tinyMCE.execCommand('mceFocus', false, s); 
+		tinyMCE.execCommand('mceRemoveControl', false, s);
+	}
+}
+
+
+	ajaxpath="/backend/ajax.php";
+	ajaxSend=function (vardata, noCleanEditors) {
+		if (typeof(noCleanEditors)=="undefined" || !noCleanEditors) {
+			cleanEditors();
+		};
+		document.status='Загружается';
+		var req = new JsHttpRequest();
+		req.onreadystatechange = function() {
+			window.processRequest(req);
+		};
+		req.caching =false;
+		req.loader='FORM';
+		req.open(null, ajaxpath, true);
+		req.send(vardata);
+		$('statusLineText').setHTML('<img src="/backend/images/loading.gif">Загрузка данных...');
+		return void(0);
+	};
+
+	window.processRequest=function(req) {
+		document.status='Загружается';
+		if (req.readyState == 4) {
+			$('statusLineText').setHTML('Загружено');
+			document.status='Загружено';
+			if (req.responseText) alert(req.responseText);
+			if (req.responseJS) {
+				if ( req.responseJS.script) {
+					eval(req.responseJS.script);
+				}
+				if ( req.responseJS.beforescript) {
+					eval(req.responseJS.beforescript);
+				}
+		        for (var i in req.responseJS.html) {
+		        	$(i).setHTML(req.responseJS.html[i]);
+		        };
+				if ( req.responseJS.afterscript) {
+					eval(req.responseJS.afterscript);
+				}
+			}
+//			document.getElementById('debug').innerHTML = req.responseText;
+
+		};
+	};
+
+</script><script language="javascript" type="text/javascript" src="backend_files/editor_template.js"></script><script language="javascript" type="text/javascript" src="backend_files/ru_002.js"></script><script language="javascript" type="text/javascript" src="backend_files/ru_003.js"></script><link href="backend_files/editor_ui.css" rel="stylesheet" type="text/css"><script language="javascript" type="text/javascript" src="backend_files/editor_plugin_002.js"></script><script language="javascript" type="text/javascript" src="backend_files/ru.js"></script><script language="javascript" type="text/javascript" src="backend_files/editor_plugin.js"></script></head><body onload="new Accordion($$('dl#menu dt'), $$('dl#menu dd'), {show:12}); "><div id="statusLine">&nbsp;&nbsp;&nbsp;
+  <div id="statusLineText">Загружено</div></div>
+<div id="menuLayer">
+	<div class="menuscroll">
+<h1 style="color: white;">!&nbsp;</h1>
+	<dl class="main" id="menu">
+	<dl>
+			<dt class="stretchtoggle">Новостройки</dt>
+				<dd style="overflow: hidden; visibility: hidden; opacity: 0; height: 0px;">
+												<a href="javascript:ajaxSend({event:'view', view:'cities', option:'', filters:[{table:'cities',field:'undo',compare:'=0', condition:'AND'}]   });void(0);">Города</a><br>				<a href="javascript:ajaxSend({event:'view', view:'subways', option:''  });void(0);">Метро</a><br>				<a href="javascript:ajaxSend({event:'view', view:'newbuilds', option:'1', filters:[{table:'objects',field:'undo',compare:'=0', condition:'AND'}] , editor:'newbuild'   });void(0);">Объекты</a><br>				<a href="javascript:ajaxSend({event:'view', view:'newslist', option:'1', filters:[{table:'news',field:'undo',compare:'=0', condition:'AND'}]   });void(0);">Новости</a><br>				<a href="javascript:ajaxSend({event:'view', view:'articles', option:'1', filters:[{table:'paths',field:'template',compare:'=\'article.html\'', condition:'AND'}]   });void(0);">Статьи</a><br></dd>				<dt class="stretchtoggle">Элитная</dt>
+				<dd style="overflow: hidden; visibility: hidden; opacity: 0; height: 0px;">
+												<a href="javascript:ajaxSend({event:'view', view:'districts', option:'', filters:[{table:'districts',field:'undo',compare:'=0', condition:'AND'}]   });void(0);">Округа</a><br>				<a href="javascript:ajaxSend({event:'view', view:'elites', option:'2', filters:[{table:'objects',field:'undo',compare:'=0', condition:'AND'}]   });void(0);">Объекты</a><br>				<a href="javascript:ajaxSend({event:'view', view:'newslist', option:'2', filters:[{table:'news',field:'undo',compare:'=0', condition:'AND'}]   });void(0);">Новости</a><br>				<a href="javascript:ajaxSend({event:'view', view:'articles', option:'2', filters:[{table:'paths',field:'template',compare:'=\'article.html\'', condition:'AND'}]   });void(0);">Статьи</a><br></dd>				<dt class="stretchtoggle">Загородная</dt>
+				<dd style="overflow: hidden; visibility: hidden; opacity: 0; height: 0px;">
+												<a href="javascript:ajaxSend({event:'view', view:'housetypes', option:'', filters:[{table:'housetypes',field:'undo',compare:'=0', condition:'AND'}]   });void(0);">Типы домов</a><br>				<a href="javascript:ajaxSend({event:'view', view:'locations', option:'', filters:[{table:'locations',field:'undo',compare:'=0', condition:'AND'}]   });void(0);">Местоположения</a><br>				<a href="javascript:ajaxSend({event:'view', view:'countrybuilds', option:'3', filters:[{table:'objects',field:'undo',compare:'=0', condition:'AND'}]   });void(0);">Объекты</a><br>				<a href="javascript:ajaxSend({event:'view', view:'newslist', option:'3', filters:[{table:'news',field:'undo',compare:'=0', condition:'AND'}]   });void(0);">Новости</a><br>				<a href="javascript:ajaxSend({event:'view', view:'articles', option:'3', filters:[{table:'paths',field:'template',compare:'=\'article.html\'', condition:'AND'}]   });void(0);">Статьи</a><br></dd>				<dt class="stretchtoggle">Коммерческая</dt>
+				<dd style="overflow: hidden; visibility: hidden; opacity: 0; height: 0px;">
+												<a href="javascript:ajaxSend({event:'view', view:'objecttypes', option:'', filters:[{table:'objecttypes',field:'undo',compare:'=0', condition:'AND'}]   });void(0);">Типы объектов</a><br>				<a href="javascript:ajaxSend({event:'view', view:'dealtypes', option:'', filters:[{table:'dealtypes',field:'undo',compare:'=0', condition:'AND'}]   });void(0);">Виды сделок</a><br>				<a href="javascript:ajaxSend({event:'view', view:'commerces', option:'4', filters:[{table:'objects',field:'undo',compare:'=0', condition:'AND'}] , editor:'commerce'   });void(0);">Объекты</a><br>				<a href="javascript:ajaxSend({event:'view', view:'newslist', option:'4', filters:[{table:'news',field:'undo',compare:'=0', condition:'AND'}]   });void(0);">Новости</a><br>				<a href="javascript:ajaxSend({event:'view', view:'articles', option:'4', filters:[{table:'paths',field:'template',compare:'=\'article.html\'', condition:'AND'}]   });void(0);">Статьи</a><br></dd>				<dt class="stretchtoggle">Зарубежная</dt>
+				<dd style="overflow: hidden; visibility: hidden; opacity: 0; height: 0px;">
+												<a href="javascript:ajaxSend({event:'view', view:'realtytypes', option:'', filters:[{table:'realtytypes',field:'undo',compare:'=0', condition:'AND'}]   });void(0);">Типы объектов</a><br>				<a href="javascript:ajaxSend({event:'view', view:'cities', option:'', filters:[{table:'cities',field:'undo',compare:'=0', condition:'AND'}]   });void(0);">Города</a><br>				<a href="javascript:ajaxSend({event:'view', view:'foreigns', option:'5', filters:[{table:'objects',field:'undo',compare:'=0', condition:'AND'}]   });void(0);">Объекты</a><br>				<a href="javascript:ajaxSend({event:'view', view:'newslist', option:'5', filters:[{table:'news',field:'undo',compare:'=0', condition:'AND'}]   });void(0);">Новости</a><br>				<a href="javascript:ajaxSend({event:'view', view:'articles', option:'5', filters:[{table:'paths',field:'template',compare:'=\'article.html\'', condition:'AND'}]   });void(0);">Статьи</a><br></dd>				<dt class="stretchtoggle">Вторичная</dt>
+				<dd style="overflow: hidden; visibility: visible; opacity: 1; height: 72px;">
+												<a href="javascript:ajaxSend({event:'view', view:'cities', option:'', filters:[{table:'cities',field:'undo',compare:'=0', condition:'AND'}]   });void(0);">Города</a><br>				<a href="javascript:ajaxSend({event:'view', view:'secondaries', option:'6', filters:[{table:'objects',field:'undo',compare:'=0', condition:'AND'}] , editor:'secondary'   });void(0);">Объекты</a><br>				<a href="javascript:ajaxSend({event:'view', view:'newslist', option:'6', filters:[{table:'news',field:'undo',compare:'=0', condition:'AND'}]   });void(0);">Новости</a><br>				<a href="javascript:ajaxSend({event:'view', view:'articles', option:'6', filters:[{table:'paths',field:'template',compare:'=\'article.html\'', condition:'AND'}]   });void(0);">Статьи</a><br></dd>				<dt class="stretchtoggle">AJAX на главной</dt>
+				<dd style="overflow: hidden; visibility: hidden; opacity: 0; height: 0px;">
+												<a href="javascript:ajaxSend({event:'view', view:'ajaxlist', option:'1', filters:[{table:'ajax',field:'undo',compare:'=0', condition:'AND'}]   });void(0);">Новостройки</a><br>				<a href="javascript:ajaxSend({event:'view', view:'ajaxlist', option:'2', filters:[{table:'ajax',field:'undo',compare:'=0', condition:'AND'}]   });void(0);">Элитные</a><br>				<a href="javascript:ajaxSend({event:'view', view:'ajaxlist', option:'3', filters:[{table:'ajax',field:'undo',compare:'=0', condition:'AND'}]   });void(0);">Загородная</a><br>				<a href="javascript:ajaxSend({event:'view', view:'ajaxlist', option:'4', filters:[{table:'ajax',field:'undo',compare:'=0', condition:'AND'}]   });void(0);">Коммерческая</a><br>				<a href="javascript:ajaxSend({event:'view', view:'ajaxlist', option:'5', filters:[{table:'ajax',field:'undo',compare:'=0', condition:'AND'}]   });void(0);">Зарубежная</a><br></dd>		</dl>
+</dl>
+<form action="" method="post" style="padding: 10px;">
+<input name="logout" value="1" type="hidden">
+<input value="Выйти" type="submit">
+</form>
+</div>
+</div>
+<div id="content"><form id="editform" onsubmit="return false" enctype="multipart/form-data">
+<h1>Вторичная</h1>
+<table style="width: 400px;" border="0" cellpadding="5" cellspacing="0">
+<tbody><tr>
+<td>Город</td><td><select id="data[city]" name="data[city]" style="width: 600px;">
+<!--<option value='0'>&nbsp;</option>-->
+<option value="40"></option>
+<option value="33">Salouf</option>
+<option value="34">Therwil</option>
+<option value="9">Балашиха</option>
+<option value="39">Бока -Которская бухта</option>
+<option value="50">Братеево</option>
+<option value="61">Быково</option>
+<option value="46">Видное</option>
+<option value="27">Воскресенск</option>
+<option value="62">Дедовск</option>
+<option value="51">Дзержинский</option>
+<option value="67">Дмитров</option>
+<option value="6">Долгопрудный</option>
+<option value="70">Домодедово</option>
+<option value="24">Евпатория</option>
+<option value="75">Егорьевск</option>
+<option value="7">Железнодорожный</option>
+<option value="29">Жуковский</option>
+<option value="36">Звенигород</option>
+<option value="48">Зеленоград</option>
+<option value="65">Ивантеевка</option>
+<option value="22">Кимры</option>
+<option value="64">Климовск</option>
+<option value="69">Клин</option>
+<option value="20">Кольчугино</option>
+<option value="43">Королев</option>
+<option value="32">Котор</option>
+<option value="8">Красногорск</option>
+<option value="52">Куркино</option>
+<option value="53">Лобня</option>
+<option value="35">Луштица</option>
+<option value="28">Люберецкий район</option>
+<option value="16">Люберцы</option>
+<option value="1">Москва</option>
+<option value="15">Московская область</option>
+<option value="10">Мытищи</option>
+<option value="74">Наро-Фоминск</option>
+<option value="54">Нахабино</option>
+<option value="66">Немчиновка</option>
+<option value="37">Ногинск</option>
+<option value="18">Одинцово</option>
+<option value="71">Орехово-Зуево</option>
+<option value="55">Паведники</option>
+<option value="30">Петровац</option>
+<option value="17">Подольск</option>
+<option value="68">Пушкино</option>
+<option value="56">Раменское</option>
+<option value="42">Сергиев Посад</option>
+<option value="19">Серпухов</option>
+<option value="57">Солнцево</option>
+<option value="60">Софрино</option>
+<option value="73">Сочи</option>
+<option value="38">Сутоморье</option>
+<option value="58">Сходня</option>
+<option value="59">Томилино</option>
+<option value="11">Троицк</option>
+<option value="49">Тула</option>
+<option value="72">Фрязино</option>
+<option value="25">Химки</option>
+<option value="41">Чехов</option>
+<option value="12">Щелково</option>
+<option value="63">Щелковский район</option>
+<option value="13">Щербинка</option>
+<option value="44">Электросталь</option>
+<option value="45">Юбилейный</option>
+</select>
+</td>
+	</tr>
+<tr>
+<td>Название ЖК</td><td><input id="data[coopname]" name="data[coopname]" value="" style="width: 600px;" type="text"></td>
+	</tr>
+<tr>
+<td>Метро</td><td><select id="data[subway]" name="data[subway]" style="width: 600px;">
+<!--<option value='0'>&nbsp;</option>-->
+<option value="0"></option>
+<option value="1">Авиамоторная</option>
+<option value="2">Автозаводская</option>
+<option value="3">Академическая</option>
+<option value="157">Александровский сад</option>
+<option value="4">Алексеевская</option>
+<option value="5">Алтуфьево</option>
+<option value="126">Анино</option>
+<option value="6">Арбатская</option>
+<option value="7">Аэропорт</option>
+<option value="8">Бабушкинская</option>
+<option value="9">Багратионовская</option>
+<option value="10">Баррикадная</option>
+<option value="11">Бауманская</option>
+<option value="12">Беговая</option>
+<option value="13">Белорусская</option>
+<option value="14">Беляево</option>
+<option value="15">Бибирево</option>
+<option value="16">Библиотека им. Ленина</option>
+<option value="17">Битцевский парк</option>
+<option value="18">Боровицкая</option>
+<option value="19">Ботанический сад</option>
+<option value="20">Братиславская</option>
+<option value="148">бул. Дмитрия Донского</option>
+<option value="163">Бульвар адмирала Ушакова</option>
+<option value="165">Бунинская аллея</option>
+<option value="21">Варшавская</option>
+<option value="22">ВДНХ</option>
+<option value="23">Владыкино</option>
+<option value="24">Водный стадион</option>
+<option value="25">Войковская</option>
+<option value="26">Волгоградский пр-кт</option>
+<option value="27">Волжская</option>
+<option value="28">Воробьевы горы</option>
+<option value="29">Выхино</option>
+<option value="158">Деловой центр</option>
+<option value="30">Динамо</option>
+<option value="31">Дмитровская</option>
+<option value="32">Добрынинская</option>
+<option value="33">Домодедовская</option>
+<option value="34">Дубровка</option>
+<option value="35">Измайловская</option>
+<option value="37">Калужская</option>
+<option value="38">Кантемировская</option>
+<option value="39">Каховская</option>
+<option value="40">Каширская</option>
+<option value="41">Киевская</option>
+<option value="42">Китай-город</option>
+<option value="43">Кожуховская</option>
+<option value="44">Коломенская</option>
+<option value="45">Комсомольская</option>
+<option value="46">Коньково</option>
+<option value="47">Красногвардейская</option>
+<option value="48">Краснопресненская</option>
+<option value="49">Красносельская</option>
+<option value="50">Красные ворота</option>
+<option value="51">Крестьянская застава</option>
+<option value="52">Кропоткинская</option>
+<option value="53">Крылатское</option>
+<option value="54">Кузнецкий мост</option>
+<option value="55">Кузьминки</option>
+<option value="56">Кунцевская</option>
+<option value="57">Курская</option>
+<option value="58">Кутузовская</option>
+<option value="59">Ленинский пр-кт</option>
+<option value="60">Лубянка</option>
+<option value="61">Люблино</option>
+<option value="62">Марксиская</option>
+<option value="63">Марьино</option>
+<option value="64">Маяковская</option>
+<option value="65">Медведково</option>
+<option value="159">Международная</option>
+<option value="66">Менделеевская</option>
+<option value="67">Молодежная</option>
+<option value="68">Нагатинская</option>
+<option value="69">Нагорная</option>
+<option value="70">Нахимовский пр-кт</option>
+<option value="71">Новогиреево</option>
+<option value="72">Новокузнецкая</option>
+<option value="73">Новослободская</option>
+<option value="74">Новые черемушки</option>
+<option value="75">Октябрьская</option>
+<option value="76">Октябрьское поле</option>
+<option value="77">Орехово</option>
+<option value="78">Отрадное</option>
+<option value="79">Охотный ряд</option>
+<option value="80">Павелецкая</option>
+<option value="81">Парк культуры</option>
+<option value="149">Парк Победы</option>
+<option value="36">Партизанская</option>
+<option value="82">Первомайская</option>
+<option value="83">Перово</option>
+<option value="84">Петровско-разумовская</option>
+<option value="85">Печатники</option>
+<option value="86">Пионерская</option>
+<option value="89">Планерная</option>
+<option value="87">Площадь Ильича</option>
+<option value="88">Площадь революции</option>
+<option value="90">Полежаевская</option>
+<option value="91">Полянка</option>
+<option value="95">Пр-кт Вернадского</option>
+<option value="92">Пражская</option>
+<option value="93">Преображенская пл.</option>
+<option value="94">Пролетарская</option>
+<option value="96">Проспект мира</option>
+<option value="97">Профсоюзная</option>
+<option value="98">Пушкинская</option>
+<option value="99">Речной вокзал</option>
+<option value="100">Рижская</option>
+<option value="101">Римская</option>
+<option value="102">Рязанский пр-кт</option>
+<option value="103">Савеловская</option>
+<option value="104">Свиблово</option>
+<option value="105">Севастопольская</option>
+<option value="106">Семеновская</option>
+<option value="107">Серпуховская</option>
+<option value="108">Смоленская</option>
+<option value="109">Сокол</option>
+<option value="110">Сокольники</option>
+<option value="111">Спортивная</option>
+<option value="112">Студенческая</option>
+<option value="113">Сухаревская</option>
+<option value="114">Сходненская</option>
+<option value="115">Таганская</option>
+<option value="116">Тверская</option>
+<option value="117">Театральная</option>
+<option value="118">Текстильщики</option>
+<option value="119">Теплый стан</option>
+<option value="120">Тимирязевская</option>
+<option value="121">Третьяковская</option>
+<option value="122">Тульская</option>
+<option value="123">Тургеневская</option>
+<option value="124">Тушинская</option>
+<option value="125">ул. академика Янгеля</option>
+<option value="164">ул. Горчакова</option>
+<option value="160">ул. Подбельского</option>
+<option value="162">ул. Скобелевская</option>
+<option value="161">ул. Старокачаловская</option>
+<option value="127">Улица 1905 года</option>
+<option value="128">Университет</option>
+<option value="129">Филевский парк</option>
+<option value="130">Фили</option>
+<option value="131">Фрунзенская</option>
+<option value="132">Царицыно</option>
+<option value="133">Цветной бульвар</option>
+<option value="134">Черкизовская</option>
+<option value="135">Чертаноская</option>
+<option value="136">Чеховская</option>
+<option value="137">Чистые пруды</option>
+<option value="138">Чкаловская</option>
+<option value="139">Шаболовская</option>
+<option value="140">Шоссе энтузиастов</option>
+<option value="141">Щелковская</option>
+<option value="142">Щукинская</option>
+<option value="143">Электрозаводская</option>
+<option value="144">Юго-западная</option>
+<option value="145">Южная</option>
+<option value="146">Ясенево</option>
+</select>
+</td>
+	</tr>
+<tr>
+<td>от метро</td><td><input id="data[way]" name="data[way]" value="" style="width: 600px;" type="text"></td>
+	</tr>
+<tr>
+<td>Адрес</td><td><textarea id="data[address]" name="data[address]" style="width: 600px; height: 150px;"></textarea></td>
+	</tr>
+<tr>
+<td>Цена за кв.м. в $</td><td><input id="data[priceusd]" name="data[priceusd]" value="" style="width: 600px;" type="text"></td>
+	</tr>
+<tr>
+<td>Цена за кв.м. в руб</td><td><input id="data[price]" name="data[price]" value="" style="width: 600px;" type="text"></td>
+	</tr>
+<tr>
+<td>Цена общая руб.</td><td><input id="data[ruprice]" name="data[ruprice]" value="" style="width: 600px;" type="text"></td>
+	</tr>
+<tr>
+<td>Цена общая у.е.</td><td><input id="data[totalprice]" name="data[totalprice]" value="" style="width: 600px;" type="text"></td>
+	</tr>
+<tr>
+<td>Площадь</td><td><input id="data[squarefull]" name="data[squarefull]" value="" style="width: 600px;" type="text"></td>
+	</tr>
+<tr>
+<td>Площадь общая</td><td><input id="data[square]" name="data[square]" value="" style="width: 600px;" type="text"></td>
+	</tr>
+<tr>
+<td>Этажность</td><td><input id="data[flor]" name="data[flor]" value="" style="width: 600px;" type="text"></td>
+	</tr>
+<tr>
+<td>Число комнат</td><td><input id="data[rooms]" name="data[rooms]" value="" style="width: 600px;" type="text"></td>
+	</tr>
+<tr>
+<td>Спецпредложение</td><td>
+<input onclick="$('data[special]').value=Number(this.checked); " onchange="$('data[special]').value=Number(this.checked); " type="checkbox">
+<input id="data[special]" name="data[special]" value="0" type="hidden">
+</td>
+	</tr>
+<tr>
+<td>В инвестиции</td><td>
+<input onclick="$('data[invest]').value=Number(this.checked); " onchange="$('data[invest]').value=Number(this.checked); " type="checkbox">
+<input id="data[invest]" name="data[invest]" value="0" type="hidden">
+</td>
+	</tr>
+<tr>
+<td>Телефоны</td><td><input id="data[phone]" name="data[phone]" value="" style="width: 600px;" type="text"></td>
+	</tr>
+<tr>
+<td>Специалист</td><td><input id="data[contacts]" name="data[contacts]" value="" style="width: 600px;" type="text"></td>
+	</tr>
+<tr>
+<td>Описание</td><td><input name="data[description]" id="data[description]" value="" type="hidden"><textarea id="description" name="description" style="width: 600px; height: 200px; display: none;"></textarea><span id="mce_editor_1_parent" class="mceEditorContainer"><table class="mceEditor" style="height: 204px;" border="0" cellpadding="0" cellspacing="0" height="204" width="600"><tbody><tr><td dir="ltr" class="mceToolbarTop" align="left" height="1" nowrap="nowrap"><span id="mce_editor_1_toolbar" class="mceToolbarContainer"><a href="#" accesskey="q" title="Переместить фокус на панель инструментов - Alt+Q, Переместить фокус в редактор - Alt-Z, Переместить фокус на элемент пути - Alt-X"></a><a id="mce_editor_1_bold" href="javascript:tinyMCE.execInstanceCommand('mce_editor_1','Bold',false);" onclick="tinyMCE.execInstanceCommand('mce_editor_1','Bold',false);return false;" onmousedown="return false;" class="mceButtonNormal" target="_self"><img src="backend_files/bold_ru.gif" title="Жирный (Ctrl+B)"></a><a id="mce_editor_1_italic" href="javascript:tinyMCE.execInstanceCommand('mce_editor_1','Italic',false);" onclick="tinyMCE.execInstanceCommand('mce_editor_1','Italic',false);return false;" onmousedown="return false;" class="mceButtonNormal" target="_self"><img src="backend_files/italic_ru.gif" title="Курсив (Ctrl+I)"></a><a id="mce_editor_1_underline" href="javascript:tinyMCE.execInstanceCommand('mce_editor_1','Underline',false);" onclick="tinyMCE.execInstanceCommand('mce_editor_1','Underline',false);return false;" onmousedown="return false;" class="mceButtonNormal" target="_self"><img src="backend_files/underline_ru.gif" title="Подчеркнутый (Ctrl+U)"></a><a id="mce_editor_1_strikethrough" href="javascript:tinyMCE.execInstanceCommand('mce_editor_1','Strikethrough',false);" onclick="tinyMCE.execInstanceCommand('mce_editor_1','Strikethrough',false);return false;" onmousedown="return false;" class="mceButtonNormal" target="_self"><img src="backend_files/strikethrough.gif" title="Перечеркнутый"></a><img src="backend_files/separator.gif" class="mceSeparatorLine" height="20" width="2"><a id="mce_editor_1_cut" href="javascript:tinyMCE.execInstanceCommand('mce_editor_1','Cut',false);" onclick="tinyMCE.execInstanceCommand('mce_editor_1','Cut',false);return false;" onmousedown="return false;" class="mceButtonNormal" target="_self"><img src="backend_files/cut.gif" title="Вырезать"></a><a id="mce_editor_1_copy" href="javascript:tinyMCE.execInstanceCommand('mce_editor_1','Copy',false);" onclick="tinyMCE.execInstanceCommand('mce_editor_1','Copy',false);return false;" onmousedown="return false;" class="mceButtonNormal" target="_self"><img src="backend_files/copy.gif" title="Копировать"></a><a id="mce_editor_1_paste" href="javascript:tinyMCE.execInstanceCommand('mce_editor_1','Paste',false);" onclick="tinyMCE.execInstanceCommand('mce_editor_1','Paste',false);return false;" onmousedown="return false;" class="mceButtonNormal" target="_self"><img src="backend_files/paste.gif" title="Вставить"></a><a id="mce_editor_1_undo" href="javascript:tinyMCE.execInstanceCommand('mce_editor_1','Undo',false);" onclick="tinyMCE.execInstanceCommand('mce_editor_1','Undo',false);return false;" onmousedown="return false;" class="mceButtonDisabled" target="_self"><img src="backend_files/undo.gif" title="Отменить (Ctrl+Z)"></a><a id="mce_editor_1_redo" href="javascript:tinyMCE.execInstanceCommand('mce_editor_1','Redo',false);" onclick="tinyMCE.execInstanceCommand('mce_editor_1','Redo',false);return false;" onmousedown="return false;" class="mceButtonDisabled" target="_self"><img src="backend_files/redo.gif" title="Вернуть (Ctrl+Y)"></a><a id="mce_editor_1_search" href="javascript:tinyMCE.execInstanceCommand('mce_editor_1','mceSearch',true);" onclick="tinyMCE.execInstanceCommand('mce_editor_1','mceSearch',true);return false;" onmousedown="return false;" class="mceButtonNormal" target="_self"><img src="backend_files/search.gif" title="Найти"></a><a id="mce_editor_1_replace" href="javascript:tinyMCE.execInstanceCommand('mce_editor_1','mceSearchReplace',true);" onclick="tinyMCE.execInstanceCommand('mce_editor_1','mceSearchReplace',true);return false;" onmousedown="return false;" class="mceButtonNormal" target="_self"><img src="backend_files/replace.gif" title="Найти / Заменить"></a><img src="backend_files/separator.gif" class="mceSeparatorLine" height="20" width="2"><a id="mce_editor_1_bullist" href="javascript:tinyMCE.execInstanceCommand('mce_editor_1','InsertUnorderedList',false);" onclick="tinyMCE.execInstanceCommand('mce_editor_1','InsertUnorderedList',false);return false;" onmousedown="return false;" class="mceButtonNormal" target="_self"><img src="backend_files/bullist.gif" title="Маркированный список"></a><a id="mce_editor_1_numlist" href="javascript:tinyMCE.execInstanceCommand('mce_editor_1','InsertOrderedList',false);" onclick="tinyMCE.execInstanceCommand('mce_editor_1','InsertOrderedList',false);return false;" onmousedown="return false;" class="mceButtonNormal" target="_self"><img src="backend_files/numlist.gif" title="Нумерованный список"></a><a id="mce_editor_1_outdent" href="javascript:tinyMCE.execInstanceCommand('mce_editor_1','Outdent',false);" onclick="tinyMCE.execInstanceCommand('mce_editor_1','Outdent',false);return false;" onmousedown="return false;" class="mceButtonDisabled" target="_self"><img src="backend_files/outdent.gif" title="Уменьшить отступ"></a><a id="mce_editor_1_indent" href="javascript:tinyMCE.execInstanceCommand('mce_editor_1','Indent',false);" onclick="tinyMCE.execInstanceCommand('mce_editor_1','Indent',false);return false;" onmousedown="return false;" class="mceButtonNormal" target="_self"><img src="backend_files/indent.gif" title="Увеличить отступ"></a><br><a id="mce_editor_1_link" href="javascript:tinyMCE.execInstanceCommand('mce_editor_1','mceLink',true);" onclick="tinyMCE.execInstanceCommand('mce_editor_1','mceLink',true);return false;" onmousedown="return false;" class="mceButtonDisabled" target="_self"><img src="backend_files/link.gif" title="Вставить/изменить ссылку"></a><a id="mce_editor_1_unlink" href="javascript:tinyMCE.execInstanceCommand('mce_editor_1','unlink',false);" onclick="tinyMCE.execInstanceCommand('mce_editor_1','unlink',false);return false;" onmousedown="return false;" class="mceButtonDisabled" target="_self"><img src="backend_files/unlink.gif" title="Убрать ссылку"></a><img src="backend_files/separator.gif" class="mceSeparatorLine" height="20" width="2"><select id="mce_editor_1_fontNameSelect" name="mce_editor_1_fontNameSelect" onfocus="tinyMCE.addSelectAccessibility(event, this, window);" onchange="tinyMCE.execInstanceCommand('mce_editor_1','FontName',false,this.options[this.selectedIndex].value);" class="mceSelectList"><option value="">-- Семейство шрифтов --</option><option value="andale mono,times">Andale Mono</option><option value="arial,helvetica,sans-serif">Arial</option><option value="arial black,avant garde">Arial Black</option><option value="book antiqua,palatino">Book Antiqua</option><option value="comic sans ms,sand">Comic Sans MS</option><option value="courier new,courier">Courier New</option><option value="georgia,palatino">Georgia</option><option value="helvetica">Helvetica</option><option value="impact,chicago">Impact</option><option value="symbol">Symbol</option><option value="tahoma,arial,helvetica,sans-serif">Tahoma</option><option value="terminal,monaco">Terminal</option><option value="times new roman,times">Times New Roman</option><option value="trebuchet ms,geneva">Trebuchet MS</option><option value="verdana,geneva">Verdana</option><option value="webdings">Webdings</option><option value="wingdings,zapf dingbats">Wingdings</option></select><select id="mce_editor_1_fontSizeSelect" name="mce_editor_1_fontSizeSelect" onfocus="tinyMCE.addSelectAccessibility(event, this, window);" onchange="tinyMCE.execInstanceCommand('mce_editor_1','FontSize',false,this.options[this.selectedIndex].value);" class="mceSelectList"><option value="0">-- Размер шрифта --</option><option value="1">1 (8 pt)</option><option value="2">2 (10 pt)</option><option value="3">3 (12 pt)</option><option value="4">4 (14 pt)</option><option value="5">5 (18 pt)</option><option value="6">6 (24 pt)</option><option value="7">7 (36 pt)</option></select><span id="mce_editor_1_forecolor" dir="ltr" class="mceMenuButton"><a href="javascript:tinyMCE.execInstanceCommand('mce_editor_1','forecolor',true);" onclick="tinyMCE.execInstanceCommand('mce_editor_1','forecolor',true);return false;" onmousedown="return false;" class="mceMenuButtonNormal" target="_self"><img src="backend_files/forecolor.gif" title="Выбрать цвет текста"></a><a href="javascript:tinyMCE.execInstanceCommand('mce_editor_1','forecolorMenu');" onclick="tinyMCE.execInstanceCommand('mce_editor_1','forecolorMenu');return false;" onmousedown="return false;"><img src="backend_files/button_menu.gif" title="Выбрать цвет текста" class="mceMenuButton"></a></span><br><a href="#" accesskey="z" onfocus="tinyMCE.getInstanceById('mce_editor_1').getWin().focus();"></a></span></td></tr><tr><td align="center"><iframe style="width: 600px; height: 135px;" allowtransparency="true" topmargin="0" leftmargin="0" marginheight="0" marginwidth="0" border="0" class="mceEditorIframe" name="mce_editor_1" id="mce_editor_1" frameborder="0" height="135" width="600"></iframe></td></tr><tr><td class="mceStatusbarBottom" height="1"><div id="mce_editor_1_path" class="mceStatusbarPathText" style="display: block;"><a href="#" accesskey="x"></a>Путь: &nbsp;</div><div id="mce_editor_1_resize" class="mceStatusbarResize" style="display: none;" onmousedown="tinyMCE.themes.advanced._setResizing(event,'mce_editor_1',true);"></div><br style="clear: both;"></td></tr></tbody></table></span></td>
+	</tr>
+<tr>
+<td>Показывать</td><td>
+<input onclick="$('data[show]').value=Number(this.checked);" onchange="$('data[show]').value=Number(this.checked);" type="checkbox">
+<input id="data[show]" name="data[show]" value="0" type="hidden">
+</td>
+	</tr>
+<tr>
+<td colspan="2"><input name="data[id]" id="data[id]" value="" type="hidden"><input name="data[department]" id="data[department]" value="6" type="hidden">
+
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+	<tbody><tr>
+		<td><a href="javascript: $('data[description]').value=tinyMCE.getContent('description'); ajaxSend({event:'save', view:'secondaries',  editor:'secondary', table:'objects', form:$('editform'), option: '6', filters:[{table:'objects',field:'undo',compare:'=0', condition:'AND'}]});void(0);"><img src="backend_files/check.gif" alt="Сохранить" border="0" height="16" width="16"></a></td>
+		<td align="center"><a href="javascript:ajaxSend({event:'view', view:'secondaries', editor:'secondary', option:'6', filters:[{table:'objects',field:'undo',compare:'=0', condition:'AND'}]});void(0);"><img src="backend_files/close.gif" alt="Отменить" border="0" height="16" width="16"></a></td>
+		<td align="right"><a href="javascript:if (confirm('%D0%A3%D0%B4%D0%B0%D0%BB%D0%B8%D1%82%D1%8C?')) {ajaxSend({event:'delete', table:'objects', field:'id', value:, editor:'secondary', view:'secondaries', option: '6', filters:[{table:'objects',field:'undo',compare:'=0', condition:'AND'}] });}; void(0);"><img src="backend_files/trash.gif" alt="Удалить" border="0" height="16" width="16"></a></td>
+	</tr>
+</tbody></table></td>
+</tr>
+</tbody></table>
+</form></div>
+<div id="popup"></div><div style="position: absolute; display: none; visibility: hidden;"><form target="" onsubmit="" action="" enctype="multipart/form-data" method="post"></form><iframe name="jshr_i_11884552951400" id="jshr_i_11884552951400" style="border: medium none ; overflow: hidden; width: 0px; height: 0px;"></iframe></div><div style="position: absolute; display: none; visibility: hidden;"><iframe name="jshr_i_11884553499376" id="jshr_i_11884553499376" style="border: medium none ; overflow: hidden; width: 0px; height: 0px;"></iframe></div><div style="position: absolute; display: none; visibility: hidden;"><form target="" onsubmit="" action="" enctype="multipart/form-data" method="post"></form><iframe name="jshr_i_11884553750158" id="jshr_i_11884553750158" style="border: medium none ; overflow: hidden; width: 0px; height: 0px;"></iframe></div><div style="position: absolute; display: none; visibility: hidden;"><form target="" onsubmit="" action="" enctype="multipart/form-data" method="post"></form><iframe name="jshr_i_11884553750159" id="jshr_i_11884553750159" style="border: medium none ; overflow: hidden; width: 0px; height: 0px;"></iframe></div><div style="position: absolute; display: none; visibility: hidden;"><form target="" onsubmit="" action="" enctype="multipart/form-data" method="post"></form><iframe name="jshr_i_118845537503110" id="jshr_i_118845537503110" style="border: medium none ; overflow: hidden; width: 0px; height: 0px;"></iframe></div><div style="position: absolute; display: none; visibility: hidden;"><form target="" onsubmit="" action="" enctype="multipart/form-data" method="post"></form><iframe name="jshr_i_118845537503111" id="jshr_i_118845537503111" style="border: medium none ; overflow: hidden; width: 0px; height: 0px;"></iframe></div>
+</body></html>
